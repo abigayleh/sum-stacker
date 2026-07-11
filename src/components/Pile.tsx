@@ -75,6 +75,10 @@ const styles = StyleSheet.create({
   well: {
     width: '90%',
     flex: 1,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderStyle: 'dashed',
+    borderRadius: 16,
   },
   stack: {
     position: 'absolute',

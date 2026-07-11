@@ -25,7 +25,7 @@ export function HomeScreen({ navigation }: Props) {
             <Text style={styles.eqNum}>1</Text>
           </View>
         </View>
-        <Text style={globalStyles.title}>Number Puzzle</Text>
+        <Text style={globalStyles.title}>Sum Stacker</Text>
         <Text style={globalStyles.subtitle}>Stack the numbers. Match the sums.</Text>
       </View>
 

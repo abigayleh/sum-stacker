@@ -53,10 +53,11 @@ export function NumberBlock({ id, value, isHint, onDrop, onTap }: Props) {
   }));
 
   const label = value > 0 ? `+${value}` : `${value}`;
+  const isNegative = !isHint && value < 0;
 
   return (
     <GestureDetector gesture={gesture}>
-      <Animated.View style={[styles.block, isHint && styles.hintBlock, animatedStyle]}>
+      <Animated.View style={[styles.block, isHint && styles.hintBlock, isNegative && styles.negativeBlock, animatedStyle]}>
         <Text style={styles.value}>{label}</Text>
       </Animated.View>
     </GestureDetector>
@@ -80,6 +81,9 @@ const styles = StyleSheet.create({
   },
   hintBlock: {
     backgroundColor: colors.surfaceAlt,
+  },
+  negativeBlock: {
+    backgroundColor: colors.accentBlue,
   },
   value: {
     color: colors.background,

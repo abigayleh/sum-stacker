@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "number-puzzle",
+    "name": "Sum Stacker",
     "slug": "number-puzzle",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -8,7 +8,10 @@
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.number-puzzle"
+      "bundleIdentifier": "com.anonymous.number-puzzle",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -21,6 +24,11 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "74a26b4a-30d9-4d78-a881-6da02516c01d"
+      }
     }
   }
 }

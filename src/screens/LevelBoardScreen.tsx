@@ -76,12 +76,12 @@ export function LevelBoardScreen({ route, navigation }: Props) {
         </Pressable>
       </View>
 
-      {level.showSum && (
-        <View style={styles.targetWrap}>
-          <Text style={styles.targetLabel}>TARGET</Text>
-          <Text style={styles.target}>{level.targetSum}</Text>
-        </View>
-      )}
+      <View style={[styles.targetWrap, !level.showSum && styles.targetWrapHidden]}>
+        <Text style={styles.targetLabel}>TARGET</Text>
+        <Text style={[styles.target, !level.showSum && styles.targetHidden]}>
+          {level.showSum ? level.targetSum : '? ? ?'}
+        </Text>
+      </View>
 
       <View style={styles.piles}>
         {pileSums.map((_, index) => (
@@ -160,6 +160,14 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     backgroundColor: colors.surface,
     alignItems: 'center',
+  },
+  targetWrapHidden: {
+    backgroundColor: 'transparent',
+    borderStyle: 'dashed',
+  },
+  targetHidden: {
+    color: colors.chalkMuted,
+    fontSize: 22,
   },
   targetLabel: {
     color: colors.chalkMuted,
