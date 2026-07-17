@@ -29,8 +29,8 @@ function isSolvable(level: LevelDef): boolean {
 }
 
 describe('LEVELS', () => {
-  it('defines exactly 25 levels with 3 piles each', () => {
-    expect(LEVELS).toHaveLength(25);
+  it('defines exactly 100 levels with 3 piles each', () => {
+    expect(LEVELS).toHaveLength(100);
     LEVELS.forEach((level) => expect(level.pileCount).toBe(3));
   });
 
@@ -40,9 +40,16 @@ describe('LEVELS', () => {
     });
   });
 
-  it('places hard spikes at levels 7, 13, 19 and 25', () => {
+  it('places a hard spike every 6th level starting at 7 (7, 13, ... 97)', () => {
+    const expected = LEVELS.map((l) => l.id).filter((id) => id >= 7 && (id - 7) % 6 === 0);
     const hardIds = LEVELS.filter((l) => l.difficulty === 'hard').map((l) => l.id);
-    expect(hardIds).toEqual([7, 13, 19, 25]);
+    expect(hardIds).toEqual(expected);
+  });
+
+  it('never uses a 3-digit number (values stay 2-digit for playability)', () => {
+    LEVELS.forEach((level) => {
+      level.blocks.forEach((b) => expect(Math.abs(b.value)).toBeLessThan(100));
+    });
   });
 
   it('hides the target sum only on hard levels', () => {
