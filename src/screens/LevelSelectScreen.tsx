@@ -42,6 +42,11 @@ export function LevelSelectScreen({ navigation }: Props) {
               style={[styles.tile, !unlocked && styles.tileLocked]}
               onPress={() => navigation.navigate('LevelBoard', { levelId: level.id })}
             >
+              {level.difficulty === 'hard' && (
+                <View style={styles.hardBadge}>
+                  <Text style={styles.hardBadgeText}>HARD</Text>
+                </View>
+              )}
               <Text style={styles.tileNumber}>{unlocked ? level.id : '•'}</Text>
               {unlocked && <StarRating stars={levelProgress.bestStars} size={12} />}
             </Pressable>
@@ -89,6 +94,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 2,
+    overflow: 'hidden',
+  },
+  hardBadge: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: colors.accentBlue,
+    alignItems: 'center',
+    paddingVertical: 2,
+  },
+  hardBadgeText: {
+    color: colors.background,
+    fontSize: 9,
+    fontWeight: '900',
+    letterSpacing: 1,
   },
   tileLocked: {
     opacity: 0.34,

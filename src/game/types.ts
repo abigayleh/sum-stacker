@@ -6,8 +6,11 @@ export type LevelBlock = {
   startLocation: BlockLocation;
 };
 
+export type Difficulty = 'easy' | 'medium' | 'hard';
+
 export type LevelDef = {
   id: number;
+  difficulty: Difficulty;
   pileCount: number;
   targetSum: number;
   showSum: boolean;
