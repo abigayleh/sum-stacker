@@ -12,7 +12,6 @@ import { NumberBlock } from '../components/NumberBlock';
 import { Pile, Rect } from '../components/Pile';
 import { Footer } from '../components/Footer';
 import { CompletionModal } from '../components/CompletionModal';
-import { SoundToggle } from '../components/SoundToggle';
 import { playChime, playClick, playWin } from '../audio/audio';
 import { hapticDrop, hapticPileComplete, hapticWin } from '../audio/haptics';
 
@@ -93,12 +92,9 @@ export function LevelBoardScreen({ route, navigation }: Props) {
           <Text style={styles.headerButton}>{'< Back'}</Text>
         </Pressable>
         <Text style={styles.headerTitle}>Level {level.id}</Text>
-        <View style={styles.headerRight}>
-          <SoundToggle />
-          <Pressable hitSlop={12} onPress={resetLevel}>
-            <Text style={styles.headerButton}>Reset</Text>
-          </Pressable>
-        </View>
+        <Pressable hitSlop={12} onPress={resetLevel}>
+          <Text style={styles.headerButton}>Reset</Text>
+        </Pressable>
       </View>
 
       <View style={[styles.targetWrap, !level.showSum && styles.targetWrapHidden]}>
@@ -164,11 +160,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 12,
-  },
-  headerRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
   },
   headerButton: {
     color: colors.chalkMuted,

@@ -1,18 +1,26 @@
 import * as Haptics from 'expo-haptics';
-import { getSoundOn } from './settings';
+import { getSettings, subscribeSettings } from '../storage/settings';
 
-// All haptics respect the single master toggle.
+let hapticsEnabled = true;
+getSettings().then((settings) => {
+  hapticsEnabled = settings.hapticsEnabled;
+});
+
+subscribeSettings((settings) => {
+  hapticsEnabled = settings.hapticsEnabled;
+});
+
 export function hapticDrop() {
-  if (!getSoundOn()) return;
+  if (!hapticsEnabled) return;
   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
 }
 
 export function hapticPileComplete() {
-  if (!getSoundOn()) return;
+  if (!hapticsEnabled) return;
   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
 }
 
 export function hapticWin() {
-  if (!getSoundOn()) return;
+  if (!hapticsEnabled) return;
   Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
 }

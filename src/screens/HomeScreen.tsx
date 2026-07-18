@@ -8,7 +8,7 @@ import { globalStyles } from '../theme/styles';
 import { colors } from '../theme/colors';
 import { getProgress } from '../storage/progress';
 import { LEVELS } from '../game/levels';
-import { SoundToggle } from '../components/SoundToggle';
+import { SettingsModal } from '../components/SettingsModal';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
@@ -43,6 +43,7 @@ function MiniPile({ values }: { values: number[] }) {
 
 export function HomeScreen({ navigation }: Props) {
   const [nextLevel, setNextLevel] = useState(1);
+  const [settingsVisible, setSettingsVisible] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -55,7 +56,15 @@ export function HomeScreen({ navigation }: Props) {
 
   return (
     <SafeAreaView style={[globalStyles.screen, styles.screen]}>
-      <SoundToggle style={styles.soundToggle} />
+      <View style={styles.topBar}>
+        <Pressable
+          style={({ pressed }) => [styles.settingsButton, pressed && styles.pressed]}
+          onPress={() => setSettingsVisible(true)}
+        >
+          <Text style={styles.settingsButtonText}>Settings</Text>
+        </Pressable>
+      </View>
+
       <View style={styles.hero}>
         <View style={styles.board}>
           <MiniPile values={LEFT_PILE} />
@@ -82,6 +91,8 @@ export function HomeScreen({ navigation }: Props) {
           <Text style={globalStyles.buttonSecondaryText}>Levels</Text>
         </Pressable>
       </View>
+
+      <SettingsModal visible={settingsVisible} onClose={() => setSettingsVisible(false)} />
     </SafeAreaView>
   );
 }
@@ -91,14 +102,27 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingBottom: 40,
   },
-  soundToggle: {
-    position: 'absolute',
-    top: 8,
-    right: 8,
-    zIndex: 10,
+  topBar: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
+  settingsButton: {
+    minHeight: 36,
+    paddingHorizontal: 12,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  settingsButtonText: {
+    color: colors.chalkWhite,
+    fontSize: 13,
+    fontWeight: '700',
   },
   hero: {
-    marginTop: 56,
+    marginTop: 18,
     alignItems: 'center',
     gap: 20,
   },

@@ -1,31 +1,49 @@
 import { createAudioPlayer, setAudioModeAsync, type AudioPlayer } from 'expo-audio';
-import { getSoundOn } from './settings';
+import { getSettings, subscribeSettings } from '../storage/settings';
 
-// App-wide audio: a looping music track plus one-shot SFX (click/chime/win).
-// Players are created once; SFX no-op while sound is off, music is paused/resumed.
-let music: AudioPlayer | null = null;
+// One-shot game SFX: click on drop, chime on pile complete, flourish on win.
 let click: AudioPlayer | null = null;
 let chime: AudioPlayer | null = null;
 let win: AudioPlayer | null = null;
+let bgm: AudioPlayer | null = null;
+let soundsEnabled = true;
+let musicEnabled = true;
+
+function syncMusicState() {
+  if (!bgm) return;
+  if (musicEnabled && !bgm.playing) bgm.play();
+  if (!musicEnabled && bgm.playing) bgm.pause();
+}
 
 export async function initAudio() {
-  if (music) return;
+  if (click) return;
   try {
     await setAudioModeAsync({ playsInSilentMode: true });
-    music = createAudioPlayer(require('../../assets/audio/music.mp3'));
-    music.loop = true;
-    music.volume = 0.4;
+    const settings = await getSettings();
+    soundsEnabled = settings.soundsEnabled;
+    musicEnabled = settings.musicEnabled;
+
     click = createAudioPlayer(require('../../assets/audio/click.mp3'));
     click.volume = 0.6;
     chime = createAudioPlayer(require('../../assets/audio/chime.mp3'));
     chime.volume = 0.7;
     win = createAudioPlayer(require('../../assets/audio/win.mp3'));
     win.volume = 0.85;
+    bgm = createAudioPlayer(require('../../assets/audio/bgm.mp3'));
+    bgm.volume = 0.35;
+    bgm.loop = true;
+    syncMusicState();
+
+    subscribeSettings((next) => {
+      soundsEnabled = next.soundsEnabled;
+      musicEnabled = next.musicEnabled;
+      syncMusicState();
+    });
   } catch {}
 }
 
 function oneShot(player: AudioPlayer | null) {
-  if (!getSoundOn() || !player) return;
+  if (!player || !soundsEnabled) return;
   player.seekTo(0).catch(() => {});
   player.play();
 }
@@ -33,17 +51,3 @@ function oneShot(player: AudioPlayer | null) {
 export const playClick = () => oneShot(click);
 export const playChime = () => oneShot(chime);
 export const playWin = () => oneShot(win);
-
-// Sync music with the toggle — call on load and after every change.
-export function applySound(on: boolean) {
-  if (on) music?.play();
-  else music?.pause();
-}
-
-// Background/foreground lifecycle — resume respects the toggle.
-export function pauseMusic() {
-  music?.pause();
-}
-export function resumeMusic() {
-  if (getSoundOn()) music?.play();
-}
