@@ -1,19 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Linking,
-  Modal,
-  Pressable,
-  StyleSheet,
-  Switch,
-  Text,
-  View,
-} from 'react-native';
+import { Modal, Pressable, StyleSheet, Switch, Text, View } from 'react-native';
 import { colors } from '../theme/colors';
 import { getSettings, updateSettings, type Settings } from '../storage/settings';
 
 type Props = {
   visible: boolean;
   onClose: () => void;
+  onOpenCredits: () => void;
 };
 
 function SettingRow({
@@ -32,13 +25,13 @@ function SettingRow({
         value={value}
         onValueChange={onValueChange}
         trackColor={{ false: '#5a4a63', true: colors.success }}
-        thumbColor={value ? colors.chalkWhite : '#f1e1cb'}
+        thumbColor={colors.chalkWhite}
       />
     </View>
   );
 }
 
-export function SettingsModal({ visible, onClose }: Props) {
+export function SettingsModal({ visible, onClose, onOpenCredits }: Props) {
   const [settings, setSettings] = useState<Settings>({
     musicEnabled: true,
     soundsEnabled: true,
@@ -51,8 +44,8 @@ export function SettingsModal({ visible, onClose }: Props) {
   }, [visible]);
 
   const setValue = (key: keyof Settings) => async (value: boolean) => {
-    const next = await updateSettings({ [key]: value });
-    setSettings(next);
+    setSettings((prev) => ({ ...prev, [key]: value }));
+    setSettings(await updateSettings({ [key]: value }));
   };
 
   return (
@@ -62,21 +55,21 @@ export function SettingsModal({ visible, onClose }: Props) {
         <View style={styles.card}>
           <Text style={styles.title}>Settings</Text>
 
-          <SettingRow label="Music" value={settings.musicEnabled} onValueChange={setValue('musicEnabled')} />
-          <SettingRow label="Sounds" value={settings.soundsEnabled} onValueChange={setValue('soundsEnabled')} />
-          <SettingRow label="Haptics" value={settings.hapticsEnabled} onValueChange={setValue('hapticsEnabled')} />
-
-          <View style={styles.creditWrap}>
-            <Text style={styles.creditTitle}>Music Credit</Text>
-            <Text style={styles.creditText}>Music from #Uppbeat (free for Creators!):</Text>
-            <Pressable onPress={() => Linking.openURL('https://uppbeat.io/t/paint-the-skies/12am')}>
-              <Text style={styles.creditLink}>https://uppbeat.io/t/paint-the-skies/12am</Text>
-            </Pressable>
-            <Text style={styles.creditText}>License code: 3L8L0IO4TJ9UVO1Y</Text>
+          <View style={styles.group}>
+            <SettingRow label="Music" value={settings.musicEnabled} onValueChange={setValue('musicEnabled')} />
+            <View style={styles.divider} />
+            <SettingRow label="Sounds" value={settings.soundsEnabled} onValueChange={setValue('soundsEnabled')} />
+            <View style={styles.divider} />
+            <SettingRow label="Haptics" value={settings.hapticsEnabled} onValueChange={setValue('hapticsEnabled')} />
           </View>
 
-          <Pressable style={styles.closeButton} onPress={onClose}>
-            <Text style={styles.closeText}>Done</Text>
+          <Pressable style={styles.creditsButton} onPress={onOpenCredits}>
+            <Text style={styles.creditsText}>Credits</Text>
+            <Text style={styles.creditsChevron}>›</Text>
+          </Pressable>
+
+          <Pressable style={styles.doneButton} onPress={onClose}>
+            <Text style={styles.doneText}>Done</Text>
           </Pressable>
         </View>
       </View>
@@ -90,31 +83,33 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.55)',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 18,
+    padding: 22,
   },
   card: {
     width: '100%',
-    maxWidth: 430,
-    borderRadius: 18,
+    maxWidth: 400,
+    borderRadius: 22,
     borderWidth: 1,
     borderColor: colors.border,
     backgroundColor: colors.surface,
-    padding: 18,
-    gap: 10,
+    padding: 22,
+    gap: 16,
   },
   title: {
     color: colors.chalkWhite,
     fontSize: 24,
     fontWeight: '800',
-    marginBottom: 4,
   },
-  row: {
-    minHeight: 48,
-    borderRadius: 12,
+  group: {
+    borderRadius: 14,
     borderWidth: 1,
     borderColor: colors.border,
-    paddingHorizontal: 12,
     backgroundColor: 'rgba(255,255,255,0.03)',
+    overflow: 'hidden',
+  },
+  row: {
+    minHeight: 54,
+    paddingHorizontal: 16,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -124,41 +119,42 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: '700',
   },
-  creditWrap: {
-    marginTop: 8,
-    borderTopWidth: 1,
-    borderTopColor: colors.border,
-    paddingTop: 12,
-    gap: 5,
+  divider: {
+    height: 1,
+    marginHorizontal: 16,
+    backgroundColor: colors.border,
   },
-  creditTitle: {
-    color: colors.chalkWhite,
-    fontSize: 14,
-    fontWeight: '800',
-  },
-  creditText: {
-    color: colors.chalkMuted,
-    fontSize: 13,
-    lineHeight: 18,
-  },
-  creditLink: {
-    color: colors.accentYellow,
-    fontSize: 13,
-    textDecorationLine: 'underline',
-  },
-  closeButton: {
-    marginTop: 8,
-    height: 44,
-    borderRadius: 12,
+  creditsButton: {
+    minHeight: 52,
+    paddingHorizontal: 16,
+    borderRadius: 14,
     borderWidth: 1,
     borderColor: colors.border,
+    backgroundColor: 'rgba(255,255,255,0.03)',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  creditsText: {
+    color: colors.chalkWhite,
+    fontSize: 17,
+    fontWeight: '700',
+  },
+  creditsChevron: {
+    color: colors.chalkMuted,
+    fontSize: 22,
+    fontWeight: '700',
+  },
+  doneButton: {
+    height: 50,
+    borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: colors.accentYellow,
   },
-  closeText: {
-    color: colors.chalkWhite,
-    fontSize: 16,
+  doneText: {
+    color: colors.background,
+    fontSize: 17,
     fontWeight: '800',
   },
 });

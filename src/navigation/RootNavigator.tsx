@@ -4,12 +4,14 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { HomeScreen } from '../screens/HomeScreen';
 import { LevelSelectScreen } from '../screens/LevelSelectScreen';
 import { LevelBoardScreen } from '../screens/LevelBoardScreen';
+import { CreditsScreen } from '../screens/CreditsScreen';
 import { colors } from '../theme/colors';
 
 export type RootStackParamList = {
   Home: undefined;
   LevelSelect: undefined;
   LevelBoard: { levelId: number };
+  Credits: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -26,6 +28,7 @@ export function RootNavigator() {
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="LevelSelect" component={LevelSelectScreen} />
         <Stack.Screen name="LevelBoard" component={LevelBoardScreen} />
+        <Stack.Screen name="Credits" component={CreditsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

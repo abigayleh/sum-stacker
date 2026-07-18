@@ -58,10 +58,13 @@ export function HomeScreen({ navigation }: Props) {
     <SafeAreaView style={[globalStyles.screen, styles.screen]}>
       <View style={styles.topBar}>
         <Pressable
+          hitSlop={10}
+          accessibilityRole="button"
+          accessibilityLabel="Settings"
           style={({ pressed }) => [styles.settingsButton, pressed && styles.pressed]}
           onPress={() => setSettingsVisible(true)}
         >
-          <Text style={styles.settingsButtonText}>Settings</Text>
+          <Text style={styles.settingsIcon}>⚙️</Text>
         </Pressable>
       </View>
 
@@ -92,7 +95,14 @@ export function HomeScreen({ navigation }: Props) {
         </Pressable>
       </View>
 
-      <SettingsModal visible={settingsVisible} onClose={() => setSettingsVisible(false)} />
+      <SettingsModal
+        visible={settingsVisible}
+        onClose={() => setSettingsVisible(false)}
+        onOpenCredits={() => {
+          setSettingsVisible(false);
+          navigation.navigate('Credits');
+        }}
+      />
     </SafeAreaView>
   );
 }
@@ -107,19 +117,17 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   settingsButton: {
-    minHeight: 36,
-    paddingHorizontal: 12,
-    borderRadius: 10,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     borderWidth: 1,
     borderColor: colors.border,
     backgroundColor: 'rgba(255,255,255,0.06)',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  settingsButtonText: {
-    color: colors.chalkWhite,
-    fontSize: 13,
-    fontWeight: '700',
+  settingsIcon: {
+    fontSize: 20,
   },
   hero: {
     marginTop: 18,
