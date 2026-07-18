@@ -21,12 +21,14 @@ function SettingRow({
   return (
     <View style={styles.row}>
       <Text style={styles.rowLabel}>{label}</Text>
-      <Switch
-        value={value}
-        onValueChange={onValueChange}
-        trackColor={{ false: '#5a4a63', true: colors.success }}
-        thumbColor={colors.chalkWhite}
-      />
+      <View style={styles.switchWrap}>
+        <Switch
+          value={value}
+          onValueChange={onValueChange}
+          trackColor={{ false: '#5a4a63', true: colors.success }}
+          thumbColor={colors.chalkWhite}
+        />
+      </View>
     </View>
   );
 }
@@ -109,15 +111,21 @@ const styles = StyleSheet.create({
   },
   row: {
     minHeight: 54,
-    paddingHorizontal: 16,
+    paddingLeft: 16,
+    paddingRight: 14,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
   },
   rowLabel: {
+    flex: 1,
     color: colors.chalkWhite,
     fontSize: 17,
     fontWeight: '700',
+  },
+  switchWrap: {
+    width: 52,
+    alignItems: 'flex-end',
+    justifyContent: 'center',
   },
   divider: {
     height: 1,
