@@ -8,6 +8,7 @@ import { globalStyles } from '../theme/styles';
 import { colors } from '../theme/colors';
 import { getProgress } from '../storage/progress';
 import { LEVELS } from '../game/levels';
+import { SoundToggle } from '../components/SoundToggle';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
@@ -54,6 +55,7 @@ export function HomeScreen({ navigation }: Props) {
 
   return (
     <SafeAreaView style={[globalStyles.screen, styles.screen]}>
+      <SoundToggle style={styles.soundToggle} />
       <View style={styles.hero}>
         <View style={styles.board}>
           <MiniPile values={LEFT_PILE} />
@@ -88,6 +90,12 @@ const styles = StyleSheet.create({
   screen: {
     justifyContent: 'space-between',
     paddingBottom: 40,
+  },
+  soundToggle: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    zIndex: 10,
   },
   hero: {
     marginTop: 56,

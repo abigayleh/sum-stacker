@@ -12,6 +12,9 @@ import { NumberBlock } from '../components/NumberBlock';
 import { Pile, Rect } from '../components/Pile';
 import { Footer } from '../components/Footer';
 import { CompletionModal } from '../components/CompletionModal';
+import { SoundToggle } from '../components/SoundToggle';
+import { playChime, playClick, playWin } from '../audio/audio';
+import { hapticDrop, hapticPileComplete, hapticWin } from '../audio/haptics';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'LevelBoard'>;
 
@@ -27,6 +30,8 @@ export function LevelBoardScreen({ route, navigation }: Props) {
       setWinVisible(true);
       if (!hasRecordedWin.current) {
         hasRecordedWin.current = true;
+        playWin();
+        hapticWin();
         recordLevelResult(level.id, stars, state.moveCount);
       }
     } else {
@@ -47,9 +52,26 @@ export function LevelBoardScreen({ route, navigation }: Props) {
           absoluteY >= rect.y &&
           absoluteY <= rect.y + rect.height
       );
-      moveBlock(blockId, targetPile ? { type: 'pile', pileIndex: Number(targetPile[0]) } : { type: 'footer' });
+
+      if (!targetPile) {
+        moveBlock(blockId, { type: 'footer' }); // returning to the footer stays silent
+        return;
+      }
+
+      const pileIndex = Number(targetPile[0]);
+      const block = state.blocks[blockId];
+      const alreadyThere = block.location.type === 'pile' && block.location.pileIndex === pileIndex;
+      moveBlock(blockId, { type: 'pile', pileIndex });
+
+      if (block.isHint || alreadyThere) return;
+      playClick();
+      hapticDrop();
+      if (pileSums[pileIndex] + block.value === level.targetSum) {
+        playChime();
+        hapticPileComplete();
+      }
     },
-    [moveBlock]
+    [moveBlock, state.blocks, pileSums, level.targetSum]
   );
 
   const returnToFooter = useCallback(
@@ -71,9 +93,12 @@ export function LevelBoardScreen({ route, navigation }: Props) {
           <Text style={styles.headerButton}>{'< Back'}</Text>
         </Pressable>
         <Text style={styles.headerTitle}>Level {level.id}</Text>
-        <Pressable hitSlop={12} onPress={resetLevel}>
-          <Text style={styles.headerButton}>Reset</Text>
-        </Pressable>
+        <View style={styles.headerRight}>
+          <SoundToggle />
+          <Pressable hitSlop={12} onPress={resetLevel}>
+            <Text style={styles.headerButton}>Reset</Text>
+          </Pressable>
+        </View>
       </View>
 
       <View style={[styles.targetWrap, !level.showSum && styles.targetWrapHidden]}>
@@ -139,6 +164,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 12,
+  },
+  headerRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
   },
   headerButton: {
     color: colors.chalkMuted,
