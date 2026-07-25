@@ -39,3 +39,9 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# store listing assets — only the README screenshots are tracked
+store-assets/*
+!store-assets/sum-stacker-1-balance.png
+!store-assets/sum-stacker-2-mechanic.png
+!store-assets/sum-stacker-3-solve.png
