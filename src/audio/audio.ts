@@ -42,10 +42,14 @@ export async function initAudio() {
   } catch {}
 }
 
-function oneShot(player: AudioPlayer | null) {
+// seekTo is async: calling play() before it lands leaves the player parked at the
+// end of the clip, which silenced every other one-shot.
+async function oneShot(player: AudioPlayer | null) {
   if (!player || !soundsEnabled) return;
-  player.seekTo(0).catch(() => {});
-  player.play();
+  try {
+    await player.seekTo(0);
+    player.play();
+  } catch {}
 }
 
 export const playClick = () => oneShot(click);
