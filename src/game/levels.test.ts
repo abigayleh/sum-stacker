@@ -40,15 +40,44 @@ describe('LEVELS', () => {
     });
   });
 
-  it('places a hard spike every 6th level starting at 7 (7, 13, ... 97)', () => {
-    const expected = LEVELS.map((l) => l.id).filter((id) => id >= 7 && (id - 7) % 6 === 0);
+  it('keeps hard levels a rare milestone - every 10th from 20', () => {
     const hardIds = LEVELS.filter((l) => l.difficulty === 'hard').map((l) => l.id);
-    expect(hardIds).toEqual(expected);
+    expect(hardIds).toEqual([20, 30, 40, 50, 60, 70, 80, 90]);
   });
 
-  it('never uses a 3-digit number (values stay 2-digit for playability)', () => {
+  it('follows every hard level with an easy breather', () => {
+    LEVELS.filter((l) => l.difficulty === 'hard').forEach((level) => {
+      expect(LEVELS.find((l) => l.id === level.id + 1)?.difficulty).toBe('easy');
+    });
+  });
+
+  it('keeps every value within +/-12 so the arithmetic stays instant', () => {
     LEVELS.forEach((level) => {
-      level.blocks.forEach((b) => expect(Math.abs(b.value)).toBeLessThan(100));
+      level.blocks.forEach((b) => {
+        expect(Math.abs(b.value)).toBeGreaterThan(0);
+        expect(Math.abs(b.value)).toBeLessThanOrEqual(12);
+      });
+    });
+  });
+
+  it('holds values to single digits until the late game', () => {
+    const ceiling = (id: number) => (id <= 30 ? 7 : id <= 65 ? 9 : 12);
+    LEVELS.forEach((level) => {
+      level.blocks.forEach((b) => expect(Math.abs(b.value)).toBeLessThanOrEqual(ceiling(level.id)));
+    });
+  });
+
+  it('introduces negative blocks only after level 7', () => {
+    LEVELS.filter((l) => l.id < 8).forEach((level) => {
+      level.blocks.forEach((b) => expect(b.value).toBeGreaterThan(0));
+    });
+  });
+
+  it('keeps the number of blocks to drag low enough to stay in flow', () => {
+    LEVELS.forEach((level) => {
+      const drags = level.blocks.filter((b) => !b.isHint).length;
+      expect(drags).toBeGreaterThanOrEqual(3);
+      expect(drags).toBeLessThanOrEqual(11);
     });
   });
 
@@ -64,14 +93,33 @@ describe('LEVELS', () => {
     });
   });
 
-  it('only pre-fills hint blocks on early levels (1-3)', () => {
+  it('opens with a fully seeded tutorial so the mechanic is obvious', () => {
+    [1, 2].forEach((id) => {
+      const level = LEVELS.find((l) => l.id === id)!;
+      expect(level.blocks.filter((b) => b.isHint)).toHaveLength(3);
+    });
+  });
+
+  it('seeds every hard level with at least one pre-placed block', () => {
+    LEVELS.filter((l) => l.difficulty === 'hard').forEach((level) => {
+      expect(level.blocks.filter((b) => b.isHint).length).toBeGreaterThan(0);
+    });
+  });
+
+  it('varies the seed pattern instead of pre-filling every level the same way', () => {
+    const seedCounts = LEVELS.map((l) => l.blocks.filter((b) => b.isHint).length);
+    expect(new Set(seedCounts).size).toBeGreaterThan(2);
+    expect(seedCounts.filter((c) => c === 0).length).toBeGreaterThan(10);
+  });
+
+  it('never pre-fills a whole pile - every pile keeps a block to place', () => {
     LEVELS.forEach((level) => {
-      const hintCount = level.blocks.filter((b) => b.isHint).length;
-      if (level.id <= 3) {
-        expect(hintCount).toBeGreaterThan(0);
-      } else {
-        expect(hintCount).toBe(0);
-      }
+      const perPile = new Array(level.pileCount).fill(0);
+      level.blocks.forEach((b) => {
+        if (b.isHint && b.startLocation.type === 'pile') perPile[b.startLocation.pileIndex] += 1;
+      });
+      const blocksPerPile = level.blocks.length / level.pileCount;
+      perPile.forEach((seeds) => expect(seeds).toBeLessThan(blocksPerPile));
     });
   });
 

@@ -14,12 +14,12 @@ Built with Expo (SDK 57) and React Native.
 
 Every level gives you three piles and a tray of number blocks — positive and negative. Drag each block from the tray onto a pile. You win when the tray is empty **and** all three piles hold the same sum.
 
-- **Hint blocks** start pre-placed in a pile and can't be moved. Easier levels have more of them.
+- **Seed blocks** start pre-placed in a pile and can't be moved. They anchor a pile and cut down how much there is to drag. Most levels open with one to three of them, and the pattern varies — some levels seed every pile, some only one, some none at all.
 - **The target sum** is shown on easy and medium levels, and hidden on hard ones — there you have to work out the balance point yourself.
 - **Stars** are scored on move efficiency: 3 stars for a perfect run (one move per block), 2 stars within 1.5× that, 1 star otherwise.
 - **Progress** unlocks sequentially — clearing a level opens the next one. Best stars and best move count are saved per level.
 
-There are **100 hand-authored levels** (35 easy, 49 medium, 16 hard). Difficulty ebbs rather than climbing straight up: a hard spike lands roughly every sixth level, each followed by an easier breather.
+There are **100 levels** (40 easy, 52 medium, 8 hard), tuned for flow rather than challenge. Block values never exceed ±12 and stay single-digit until level 66, so the arithmetic is always instant. Hard levels are a rare milestone — every tenth level from 20 onward, each followed by an easy breather — and the first 19 levels have no spike at all.
 
 ## Getting started
 
